@@ -337,7 +337,7 @@ if __name__ == '__main__':
                     pygame.display.flip()
                 CLOCK.tick(FPS)
                 frame_display_ghost(WIDTH, HEIGHT)
-                CAMERA.start_preview(fullscreen=False, window = (W-WIDTH, 100, WIDTH, HEIGHT))
+                CAMERA.start_preview()
             elif erase_last_frame:
                 print('erase last frame')
                 frame_erase_last()
