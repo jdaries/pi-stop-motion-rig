@@ -14,19 +14,19 @@ from picamera import PiCamera
 # 2 = delete movie / pink button
 # 3 = preview movie / green button
 # 4 = delete a frame / blue button
-# 5 - take a picture / yellow button
-# 6 - save movie / white button
-# 13 - exit program / switch
+# 17 - take a picture / yellow button
+# 27 - save movie / white button
+# 22 - exit program / switch
 
 # KEYBOARD MAPPING
-# forward slash = delete movie 
-# space = preview movie 
-# back = delete a frame 
-# enter = take a picture 
-# s = save 
+# forward slash = delete movie
+# space = preview movie
+# back = delete a frame
+# enter = take a picture
+# s = save
 # esc = exit program
 
-BUTTON_NUMBERS = [2, 3, 4, 5, 6, 13]
+BUTTON_NUMBERS = [2, 3, 4, 17, 27, 22]
 
 
 BUTTONS = {
@@ -46,7 +46,7 @@ preview_playing = False
 
 def display_start_screen(W, H, switch_frame):
     SCREEN.fill(TEAL)
-    
+
     # LOAD IMAGES
     title_1 = pygame.image.load('src/assets/title_1.png')
     title_2 = pygame.image.load('src/assets/title_2.png')
@@ -55,30 +55,30 @@ def display_start_screen(W, H, switch_frame):
     aspect = float(title_rect.width)/float(title_rect.height)
     title_1= pygame.transform.scale(title_1, (int(H*aspect), H))
     title_2 = pygame.transform.scale(title_2, (int(H*aspect), H))
-      
+
     title_to_show = title_1 if switch_frame else title_2
     SCREEN.blit(title_to_show, (W/2-H*aspect/2, 0))
 
     # TODO add WICO logo
 
     pygame.display.update()
-    
+
 def display_create_video(W, H):
     print('display_create_video')
     SCREEN.fill(TEAL)
-    
+
     loading_images = ['src/assets/loading_1.png', 'src/assets/loading_2.png',
                       'src/assets/loading_3.png'];
-    
+
     random_src = random.choice (loading_images)
     loading_image = pygame.image.load(random_src)
     loading_rect = loading_image.get_rect()
     aspect = float(loading_rect.width)/float(loading_rect.height)
     loading_image = pygame.transform.scale(loading_image, (int(H*aspect), H))
-     
+
     SCREEN.blit(loading_image, (int(W/2-H*aspect/2), 0))
     pygame.display.update()
-    
+
 def frame_capture():
     print('capture frame')
     ns = frame_get_numbers()
@@ -111,7 +111,7 @@ def frame_get_last(W, H):
         image = pygame.Surface((W, H))
         image.fill([0, 0, 0])
     return image
-                 
+
 def frame_get_numbers():
     ns = []
     pattern = re.compile(r'frames\/frame\_(?P<num>\d+)\.jpg')
@@ -149,10 +149,10 @@ def play_movie(name, W, H):
     print('play movie ', name)
     SCREEN.fill(TEAL)
     pygame.display.update()
-    
+
     preview_playing = True
     ns = frame_get_numbers()
-    
+
     # show preview background image
     preview = pygame.image.load('src/assets/preview.png')
     preview_rect = preview.get_rect()
@@ -161,7 +161,7 @@ def play_movie(name, W, H):
     preview_rect = preview.get_rect(center = (W/2, preview.get_rect().height/2))
     SCREEN.blit(preview, preview_rect)
     pygame.display.flip()
-    
+
     while preview_playing:
         for n in ns:
             anim = pygame.image.load('frames/frame_{n:04d}.jpg'.format(n=n))
@@ -176,7 +176,7 @@ def play_movie(name, W, H):
             SCREEN.blit(anim, anim_rect)
             CLOCK.tick(FPS)
             pygame.display.flip()
-            
+
             # add info about video path
             font_size = 16
             font = pygame.font.Font('src/cafe.ttf', font_size)
@@ -184,16 +184,16 @@ def play_movie(name, W, H):
                                         True, BLACK)
             video_path_text_rect = video_path_text.get_rect(center=(W/2, anim_rect.height + padding*4))
             SCREEN.blit(video_path_text, video_path_text_rect)
-            
+
             # add retart button
-            btn_width = 300 
+            btn_width = 300
             restart_btn_img = pygame.image.load('src/assets/restart_btn.png')
             restart_btn_rect = restart_btn_img.get_rect()
             btn_aspect = float(restart_btn_rect.width) / float(restart_btn_rect.height)
             restart_btn_img = pygame.transform.scale(restart_btn_img, (btn_width, int(btn_width/btn_aspect)))
             restart_rect = restart_btn_img.get_rect(center=(W/2, anim_rect.height + padding*8 + video_path_text_rect.height))
             SCREEN.blit(restart_btn_img, restart_rect)
-            
+
             # check if user asked to exit and reset
             events = pygame.event.get()
             for event in events:
@@ -236,24 +236,24 @@ if __name__ == '__main__':
     # new variables for easily changing scale for debugging purposes
     WIDTH = int(W)
     HEIGHT = int(H)
-    
+
     print('Resolution: ({WIDTH}, {HEIGHT}).'.format(WIDTH=WIDTH, HEIGHT=HEIGHT))
     SCREEN = pygame.display.set_mode([WIDTH, HEIGHT])
     pygame.mouse.set_visible = False
     pygame.display.toggle_fullscreen()
-    
+
     CLOCK = pygame.time.Clock()
     CAMERA = PiCamera()
     CAMERA.preview_alpha = 200
     CAMERA.resolution = (WIDTH, HEIGHT)
-    
+
     # Main loop.
     while True:
         pressed = get_pressed_buttons()
-        
+
         if reset:
             if frame >= cycle:
-                frame = 0 
+                frame = 0
                 screen = not screen
             display_start_screen(WIDTH, HEIGHT, screen)
             events = pygame.event.get()
@@ -261,7 +261,7 @@ if __name__ == '__main__':
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
                         quit_app()
-                    else: 
+                    else:
                         print('start app')
                         reset = False
                         # show camera preview
@@ -282,7 +282,7 @@ if __name__ == '__main__':
             exit_app = False
 
             # button press events
-            pressed = get_pressed_buttons()              
+            pressed = get_pressed_buttons()
             if pressed == {2}:
                 delete_and_quit = True
             elif pressed == {3}:
@@ -300,12 +300,12 @@ if __name__ == '__main__':
             events = pygame.event.get()
             for event in events:
                 if event.type == pygame.KEYDOWN:
-                    key = event.key  
+                    key = event.key
                     print('keypressed: ', key)
-                  
+
                     # Delete frames and quit.
                     if key == pygame.K_SLASH: #forward slash
-                        delete_and_quit = True                        
+                        delete_and_quit = True
                     # Show preview.
                     elif key == pygame.K_SPACE: #space key
                         show_preview = True
@@ -322,7 +322,7 @@ if __name__ == '__main__':
                     elif key == pygame.K_ESCAPE:
                         exit_app = True
 
-            if delete_and_quit: 
+            if delete_and_quit:
                 print('delete frames and quit')
                 frames_delete()
                 frame_display_ghost(WIDTH, HEIGHT)
@@ -349,10 +349,10 @@ if __name__ == '__main__':
             elif make_and_save_movie:
                 print('make and save movie')
                 CAMERA.preview_alpha = 0 # hide camera
-                
+
                 display_create_video(WIDTH, HEIGHT)
                 CLOCK.tick(FPS)
-                # make movie          
+                # make movie
                 new_movie = movie_make(FPS_MOVIE)
                 play_movie(new_movie, WIDTH, HEIGHT)
                 frames_delete()
